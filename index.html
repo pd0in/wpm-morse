@@ -1,0 +1,92 @@
+<!doctype html>
+<html lang="nl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="WPM Morse">
+<meta name="theme-color" content="#0b0f17">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="apple-touch-icon" href="icons/icon-180.png">
+<link rel="stylesheet" href="css/app.css">
+<title>WPM Morse by PD0IN</title>
+</head>
+<body>
+  <!-- WPM Morse Decoder, formerly CW Oor (Richard, 18 Nov 2026): the CW decoder of DX Station as a phone app. Like ggmorse it listens through the
+       microphone, finds the tone and reads the morse. The decoder files in js/ are copies of ~/SatTrack/web/js. -->
+  <header class="top">
+    <div class="brand"><b>WPM Morse</b><span>by PD0IN · decoder van DX Station</span></div>
+    <div class="state" id="state">uit</div>
+  </header>
+
+  <section class="stats" aria-label="Signaal">
+    <div class="stat big"><span class="v" id="wpm">--</span><span class="l">WPM</span></div>
+    <div class="stat"><span class="v" id="pitch">---</span><span class="l" id="pitch-l">Hz auto</span></div>
+    <div class="stat"><span class="v" id="snr">--</span><span class="l">dB S/R</span></div>
+    <div class="meter" aria-label="Niveau"><i id="level"></i><b id="tone" title="Toon aan"></b></div>
+  </section>
+
+  <!-- tuning indicator like DX Station's (Richard, 19 Nov 2026): with a fixed pitch the lit bar shows where the heard
+       tone is; the middle one lights green when the station is on your CW pitch -->
+  <div class="tune" id="tune" hidden><span class="tn-side">−</span><div class="tn-bars" id="tn-bars"></div><span class="tn-side">+</span><span class="tn-lbl" id="tn-lbl"></span></div>
+
+  <section class="fall" id="fall-box">
+    <canvas id="fall" aria-label="Waterval: tik op een signaal om daarop vast te zetten"></canvas>
+    <div class="axis" id="axis"></div>
+    <button type="button" class="chip" id="auto" hidden>Auto</button>
+  </section>
+
+  <p class="note" id="note">Tik op <b>Luister</b> en houd de telefoon bij de luidspreker.</p>
+
+  <section class="textbox">
+    <div class="text" id="text" role="log" aria-live="off" data-placeholder="Hier verschijnt de tekst"></div>
+    <button type="button" class="jump" id="jump" hidden>↓ nieuwste tekst</button>
+  </section>
+
+  <nav class="bar">
+    <button type="button" class="go" id="go">Luister</button>
+    <button type="button" id="clear" title="Tekst wissen">Wis</button>
+    <button type="button" id="copy" title="Tekst kopiëren">Kopieer</button>
+    <button type="button" id="share" title="Tekst delen">Deel</button>
+    <button type="button" id="cog" title="Instellingen" aria-label="Instellingen">⚙︎</button>
+  </nav>
+
+  <dialog id="settings">
+    <form method="dialog">
+      <h2>Instellingen</h2>
+      <label class="row">Lettergrootte
+        <span class="seg" id="fs"><button type="button" data-fs="14">Small</button><button type="button" data-fs="18">Medium</button><button type="button" data-fs="24">Large</button></span>
+      </label>
+      <div class="fsprev">CQ DE PD0IN 5NN TU</div>
+      <div class="row pitchrow">Toonhoogte
+        <span class="seg" id="pmode"><button type="button" data-p="auto">Automatisch</button><button type="button" data-p="vast">Vast</button></span>
+        <label class="phz" id="phz-row" hidden><input id="phz" type="number" inputmode="numeric" min="300" max="1100" step="10" value="700"> Hz</label>
+      </div>
+      <p class="hint">Vast: zet hier de CW-toon van je transceiver (bijv. 700 Hz). De decoder luistert dan alleen naar die toon en het afstemlampje laat zien of het station erop zit. Dat werkt beter als er andere stations of geluiden zijn.</p>
+      <label class="row">Eigen roepnaam
+        <input id="call" autocapitalize="characters" spellcheck="false" maxlength="12" placeholder="PD0IN">
+      </label>
+      <p class="hint">De decoder kent de gewone QSO-woorden en je eigen roepnaam, en verbetert daarmee bijna-goede woorden.</p>
+      <label class="row"><span>Scherm aan laten tijdens luisteren</span><input type="checkbox" id="wake"></label>
+      <label class="row"><span>Waterval tonen</span><input type="checkbox" id="showfall"></label>
+      <label class="row"><span>Prosigns als + = (in plaats van &lt;AR&gt; &lt;BT&gt;)</span><input type="checkbox" id="symbols"></label>
+      <button type="button" class="recbtn" id="rec">Laatste 30 s geluid delen</button>
+      <p class="hint">Leest hij slecht? Laat hem luisteren tijdens het QSO, tik dan hierop en stuur het bestand (AirDrop) naar de Mac. Daar gaat precies hetzelfde geluid door de decoder.</p>
+      <h3>Tips</h3>
+      <ul class="hint">
+        <li>Houd de microfoon dicht bij de luidspreker en zet de radio niet te hard: zuiver is beter dan luid.</li>
+        <li>Een smal CW-filter (400–500 Hz) op de radio helpt, ruisonderdrukking (DNR) liever uit.</li>
+        <li>Meer stations tegelijk? Tik in de waterval op het station dat je wilt lezen. <b>Auto</b> laat de decoder weer zelf zoeken.</li>
+        <li>Op de iPhone stopt de microfoon als je de app wegveegt of het scherm op slot gaat.</li>
+        <li>Geen toegang tot de microfoon? iPhone: Instellingen › Safari › Microfoon, of het aA-menu in de adresbalk.</li>
+      </ul>
+      <p class="hint" id="ver"></p>
+      <button class="close">Klaar</button>
+    </form>
+  </dialog>
+
+  <script type="module" src="js/app.js"></script>
+</body>
+</html>

@@ -1,0 +1,124 @@
+:root {
+  --bg: #0b0f17;
+  --panel: #131a27;
+  --line: #24304a;
+  --text: #e8edf6;
+  --dim: #8592ab;
+  --amber: #ffb547;
+  --green: #3ccf91;
+  --blue: #4ea1ff;
+  --red: #ff6b6b;
+  --fs: 26px;
+}
+* { box-sizing: border-box; }
+html, body { margin: 0; height: 100%; background: var(--bg); color: var(--text); }
+body {
+  font: 16px/1.35 -apple-system, BlinkMacSystemFont, "SF Pro Text", system-ui, sans-serif;
+  display: flex; flex-direction: column;
+  height: 100dvh;
+  padding: env(safe-area-inset-top) max(12px, env(safe-area-inset-right)) 0 max(12px, env(safe-area-inset-left));
+  overflow: hidden;
+  -webkit-user-select: none; user-select: none;
+  -webkit-tap-highlight-color: transparent;
+}
+button { font: inherit; color: inherit; }
+
+.top { display: flex; align-items: center; justify-content: space-between; padding: 10px 0 8px; }
+.brand b { font-size: 20px; letter-spacing: .5px; color: var(--amber); }
+.brand span { display: block; font-size: 13px; font-weight: 600; color: var(--green); }
+.state { font-size: 13px; padding: 4px 10px; border-radius: 99px; background: var(--panel); color: var(--dim); border: 1px solid var(--line); }
+.state.on { color: var(--green); border-color: var(--green); }
+.state.err { color: var(--red); border-color: var(--red); }
+
+.stats { display: grid; grid-template-columns: 1.2fr 1fr 1fr; gap: 8px; align-items: stretch; }
+.stat { background: var(--panel); border: 1px solid var(--line); border-radius: 12px; padding: 6px 10px; display: flex; flex-direction: column; }
+.stat .v { font: 600 26px/1.1 ui-monospace, "SF Mono", Menlo, monospace; font-variant-numeric: tabular-nums; }
+.stat.big .v { color: var(--amber); font-size: 30px; }
+.stat .l { font-size: 12px; color: var(--dim); }
+.stat .v.stale { opacity: .4; }
+.meter { grid-column: 1 / -1; position: relative; height: 10px; border-radius: 6px; background: var(--panel); border: 1px solid var(--line); overflow: hidden; }
+.meter i { position: absolute; inset: 0 auto 0 0; width: 0; background: linear-gradient(90deg, var(--blue), var(--green)); transition: width .1s; }
+.meter b { position: absolute; right: 3px; top: 1px; width: 6px; height: 6px; border-radius: 50%; background: var(--line); }
+.meter b.on { background: var(--amber); box-shadow: 0 0 6px var(--amber); }
+
+.fall { position: relative; margin-top: 8px; border-radius: 12px; overflow: hidden; border: 1px solid var(--line); background: #05070c; touch-action: manipulation; }
+.fall canvas { display: block; width: 100%; height: 96px; }
+.axis { position: relative; height: 16px; font-size: 10px; color: var(--dim); background: var(--panel); }
+.axis span { position: absolute; top: 1px; transform: translateX(-50%); }
+.chip { position: absolute; top: 6px; right: 6px; padding: 4px 12px; border-radius: 99px; border: 1px solid var(--amber); background: rgba(11,15,23,.8); color: var(--amber); font-size: 13px; }
+
+.note { margin: 8px 2px 6px; height: 1.35em; line-height: 1.35em; font-size: 14px; color: var(--dim); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; } /* one fixed line: the text below must not move (19 Nov 2026) */
+.note.morse { color: var(--green); }
+
+.textbox { position: relative; flex: 1; min-height: 0; }
+.text {
+  height: 100%; overflow-y: auto; -webkit-overflow-scrolling: touch;
+  background: var(--panel); border: 1px solid var(--line); border-radius: 12px; padding: 12px 14px;
+  /* (Richard, 18 Nov 2026: green, a normal readable font, size from the settings) */
+  color: var(--green);
+  font: 500 var(--fs)/1.4 -apple-system, BlinkMacSystemFont, "SF Pro Text", system-ui, "Segoe UI", Roboto, sans-serif; letter-spacing: .02em;
+  white-space: pre-wrap; word-break: break-word;
+  -webkit-user-select: text; user-select: text;
+}
+.text:empty::before { content: attr(data-placeholder); color: var(--dim); font-weight: 400; font-size: 16px; font-family: -apple-system, system-ui, sans-serif; letter-spacing: 0; }
+.text .u { opacity: .45; text-decoration: underline dotted; }
+.text .fx { color: var(--blue); }
+.text .pro { color: var(--amber); }
+.text .guess { opacity: .4; }
+.jump { position: absolute; right: 10px; bottom: 10px; padding: 6px 12px; border-radius: 99px; border: 1px solid var(--blue); background: var(--bg); color: var(--blue); font-size: 14px; }
+
+.bar { display: grid; grid-template-columns: 1.6fr 1fr 1fr 1fr .7fr; gap: 6px; padding: 10px 0 calc(10px + env(safe-area-inset-bottom)); }
+.bar button { min-height: 52px; border-radius: 14px; border: 1px solid var(--line); background: var(--panel); font-size: 15px; }
+.bar button:active { filter: brightness(1.4); }
+.bar .go { background: var(--green); color: #04130c; border-color: var(--green); font-weight: 700; font-size: 18px; }
+.bar .go.on { background: var(--red); border-color: var(--red); color: #1a0505; }
+
+dialog { background: var(--panel); color: var(--text); border: 1px solid var(--line); border-radius: 16px; width: min(92vw, 460px); max-height: 85dvh; padding: 16px 18px; }
+dialog::backdrop { background: rgba(0,0,0,.6); }
+dialog h2 { margin: 0 0 10px; font-size: 20px; }
+dialog h3 { margin: 16px 0 4px; font-size: 15px; color: var(--dim); }
+.row { display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: 10px 0; border-bottom: 1px solid var(--line); }
+.row input[type=checkbox] { width: 24px; height: 24px; accent-color: var(--green); flex: none; }
+.row input:not([type]) { width: 9em; padding: 8px 10px; border-radius: 8px; border: 1px solid var(--line); background: var(--bg); color: var(--text); font: 600 16px ui-monospace, Menlo, monospace; text-transform: uppercase; }
+.seg { display: inline-flex; gap: 6px; }
+.fsrow { display: flex; align-items: center; gap: 10px; flex: 1; justify-content: flex-end; }
+.fsrow input[type=range] { flex: 1; max-width: 12em; accent-color: var(--green); }
+.fsrow output { min-width: 3.2em; text-align: right; font-variant-numeric: tabular-nums; color: var(--dim); font-size: 14px; }
+.fsprev { margin: 4px 0 8px; padding: 8px 10px; border-radius: 8px; background: var(--bg); color: var(--green); font: 500 var(--fs)/1.4 -apple-system, BlinkMacSystemFont, system-ui, sans-serif; }
+.seg button { min-width: 48px; min-height: 40px; border-radius: 10px; border: 1px solid var(--line); background: var(--bg); }
+.hint { font-size: 13px; color: var(--dim); margin: 6px 0; }
+ul.hint { padding-left: 18px; }
+ul.hint li { margin: 4px 0; }
+.close { width: 100%; margin-top: 12px; min-height: 48px; border-radius: 12px; border: 0; background: var(--blue); color: #04101f; font-weight: 700; }
+
+@media (orientation: landscape) and (max-height: 500px) {
+  .fall canvas { height: 60px; }
+  .stat .v { font-size: 20px; }
+  .stat.big .v { font-size: 22px; }
+  .bar button { min-height: 42px; }
+}
+.recbtn { width: 100%; margin-top: 12px; min-height: 48px; border-radius: 12px; border: 1px solid var(--amber); background: transparent; color: var(--amber); font-weight: 600; }
+.seg button { padding: 0 12px; }
+.seg button.on { background: var(--green); color: #04130c; border-color: var(--green); font-weight: 700; }
+.row:has(#fs) { flex-wrap: wrap; }
+#fs { display: grid; grid-template-columns: 1fr 1fr 1fr; width: 100%; }
+#fs button { min-width: 0; }
+
+/* tuning indicator, DX Station style */
+.tune { display: flex; align-items: flex-end; justify-content: center; gap: 8px; margin-top: 8px; }
+.tune[hidden] { display: none; }
+.tune .tn-bars { display: flex; align-items: flex-end; gap: 4px; height: 26px; }
+.tune .tn-bars i { width: 8px; border-radius: 1px; background: var(--line); }
+.tune .tn-bars i.on { background: #1f9e50; }
+.tune .tn-bars i.on.far { opacity: .55; }
+.tune .tn-bars i.on.ok { background: #2fd16b; box-shadow: 0 0 8px #2fd16bcc; }
+.tune .tn-side { font: 700 13px/1 system-ui; color: var(--dim); padding-bottom: 2px; }
+.tune .tn-lbl { font-size: 12px; color: var(--dim); padding-bottom: 2px; min-width: 4.5em; font-variant-numeric: tabular-nums; }
+.tune.hit .tn-lbl { color: #2fd16b; font-weight: 700; }
+.pitchrow { flex-wrap: wrap; }
+#pmode { display: grid; grid-template-columns: 1fr 1fr; width: 100%; }
+#pmode button { min-width: 0; }
+#pmode button.on { background: var(--green); color: #04130c; border-color: var(--green); font-weight: 700; }
+.phz { display: flex; align-items: center; gap: 8px; width: 100%; justify-content: flex-end; }
+.phz[hidden] { display: none; }
+.phz input { width: 6em; padding: 8px 10px; border-radius: 8px; border: 1px solid var(--line); background: var(--bg); color: var(--text); font: 600 16px system-ui; text-align: right; }
