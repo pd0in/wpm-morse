@@ -1,5 +1,5 @@
 // WPM Morse Decoder works offline: online always the newest version (a copy is kept), offline the copy.
-const CACHE = 'cwoor-v12';
+const CACHE = 'cwoor-v13';
 const SHELL = ['./', 'index.html', 'css/app.css', 'js/app.js', 'js/cw-decoder.js', 'js/cw-decoder-tables.js', 'js/cw-viterbi.js', 'js/cw-context.js', 'js/cw-front.js',
   'js/cw-signal.js', 'js/cw-worklet.js', 'manifest.webmanifest', 'icons/icon-180.png', 'icons/icon-192.png', 'icons/icon-512.png'];
 self.addEventListener('install', (e) => e.waitUntil(caches.open(CACHE).then((c) => c.addAll(SHELL.map((u) => new Request(u, { cache: 'reload' })))).then(() => self.skipWaiting())));

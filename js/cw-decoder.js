@@ -990,7 +990,10 @@ export class CwDecoder {
     const elements = p.reduce((s, x) => s + x.c.pattern.length, 0);
     const known = p.filter((x) => x.c.ch !== '*').length;
     const level = p.length ? median(p.map((x) => x.level)) : 0;
-    const open = (elements >= 3 && level >= GATE_STRONG) || (known >= 2 && elements >= 4 && level >= GATE_WEAK);
+    // (weak path: not only lone E's and T's; a row of single marks 2-3 times the noise level is a noise burst, and
+    // opened the gate for the E's in a quiet band, 24 Nov 2026)
+    const multi = p.some((x) => x.c.pattern.length >= 2);
+    const open = (elements >= 3 && level >= GATE_STRONG) || (known >= 2 && elements >= 4 && level >= GATE_WEAK && multi);
     if (!open) return;
     this.gate = true;
     // a held character far weaker than the real ones is a noise mark just before them (a lone E in front of the first C)
